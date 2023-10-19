@@ -1,0 +1,10 @@
+1) dependecias
+    uuid
+    navigation
+    react native types
+    vector icons
+
+2)models
+    iTreinos
+    iExercicioBase
+    iExericiosUso
