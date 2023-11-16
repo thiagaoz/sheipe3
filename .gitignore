@@ -34,5 +34,5 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-# lembretes pessoas 
-.lembretes.txt
+# lembretes pessoais 
+lembretes.txt

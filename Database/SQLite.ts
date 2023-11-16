@@ -1,5 +1,24 @@
-import * as SQLite from 'expo-sqlite'
+import * as SQLite from "expo-sqlite";
 
-const db = SQLite.openDatabase("db.db")
+export const db = SQLite.openDatabase("database.sqlite");
 
-export default db
+export const executeTransaction = (
+  sql: string,
+  values?: (string | number | null)[]
+) => {
+  return new Promise<SQLite.SQLResultSet>((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        sql,
+        values,
+        (_, resultSet) => {
+          resolve(resultSet);
+        },
+        (_, error) => {
+          reject(error);
+          return true; // rollback
+        }
+      );
+    });
+  });
+};

@@ -1,37 +1,93 @@
-import db from './SQLite'
-import { Workout } from '../models/types'
-import { SQLError, SQLResultSetRowList } from 'expo-sqlite';
+import { Workout } from "../models/types";
+import ExerciseBaseDB from "./ExerciseBaseDB";
+import { executeTransaction } from "./SQLite";
+/*
+export type Car = {
+  id?: number;
+  brand: string;
+  model: string;
+  hp: number;
+};
 
-const createWorkoutsTable = async () => { 
-    try{
-        db.transaction((tx)=>{
-            tx.executeSql(
-                'CREATE TABLE IF NOT EXISTS workouts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, position INTEGER)',
-                [],
-                ()=>{
-                    console.log('tabela workouts criada')
-                },
-                (_: any, error: SQLError) => {
-                    // Handle the error
-                    console.error('SQL Erro criando TABLE:', error);
-                    return true; // Rollback the transaction
-                }
-            )
-        })
-    }
-    catch{
+export default class CarRepository {
+  constructor() {
+    this.up();
+  }
 
-    }
+  public async up() {
+    await executeTransaction(
+      "CREATE TABLE IF NOT EXISTS cars (id INTEGER PRIMARY KEY AUTOINCREMENT, brand TEXT, model TEXT, hp INT);"
+    );
+  }
+
+  public async down() {
+    await executeTransaction("DROP TABLE cars;");
+  }
+
+  public async create(car: Car) {
+    const result = await executeTransaction(
+      "INSERT INTO cars (brand, model, hp) values (?, ?, ?);",
+      [car.brand, car.model, car.hp]
+    );
+    return result.insertId;
+  }
+
+  public async all() {
+    const result = await executeTransaction("SELECT * FROM cars");
+    return result.rows._array;
+  }
+}
+*/
+const createTable = async () => { 
+    await executeTransaction(
+        'CREATE TABLE IF NOT EXISTS workouts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, position INTEGER)'
+    )
 }
 
-const dropWorkoutsTable = async () => { 
-    db.transaction((tx) => {
-        tx.executeSql('DROP TABLE workouts;');
-        console.log('tabela workouts deletada')
-      })
+const dropTable = async () => { 
+    await executeTransaction('DROP TABLE workouts;')
+}
+
+const create = async (obj:{name: string, position:number}) => { 
+    const result = await executeTransaction(
+        'INSERT INTO workouts (name, position) values (?,?);',
+        [obj.name, obj.position],
+    )
+    return result.insertId
+}
+
+const update = async (workout:Workout) => { 
+    const result = await executeTransaction(
+        'UPDATE workouts SET name=?, position=? WHERE id=?;',
+        [workout.name, workout.position, workout.id],
+    )
+    return result.rowsAffected
+}
+
+const find = async (id:number) => {
+    const result = await executeTransaction(
+        'SELECT FROM workouts WHERE id=?',
+        [id],
+    )
+    return result.rows._array
+}
+
+const getAll = async (): Promise<Workout[]> => {
+    const result = await executeTransaction('SELECT * FROM workouts;')
+    return result.rows._array
+}
+
+const remove = async (workout:Workout) => {
+    await executeTransaction('DELETE FROM workouts WHERE id=?',
+    [workout.id],)
 }
 
 export default { 
-    createWorkoutsTable, 
-    dropWorkoutsTable
+    createTable, 
+    create,
+    update,
+    find,
+    getAll,
+    remove,
+    dropTable
 }
