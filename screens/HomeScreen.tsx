@@ -15,11 +15,9 @@ import { setExercisesBaseOnDB } from '../teste.ts/exerciciosBase';
 import React from 'react';
 
 export default function HomeScreen() {
-  
+  console.log(' ========================    START   ======================')
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   
-  console.log(' ---------------- START ----------------')
-
   const [workouts, setWorkouts] = useState<Workout[]>()
   const [addWorkoutOn, setAddWorkoutOn] = useState<boolean>(false)
 
@@ -108,7 +106,7 @@ export default function HomeScreen() {
             <Text>Organizar treinos</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.bottom_button} onPress={() => { navigation.navigate('ExercisesDB') }}>
-          <Text>Exercícios</Text>
+          <Text style={styles.lista_text}>Lista de Exercícios</Text>
         </TouchableOpacity>
       </View>
       { addWorkoutOn&&
@@ -178,11 +176,10 @@ const styles = StyleSheet.create({
     borderLeftWidth: 0,
 
   },
-  bottom_buttons_label:{
-
+  lista_text:{
+    width: '70%',
+    textAlign: 'center'
   }
 });
-function useFocusEffect(arg0: () => () => void) {
-  throw new Error('Function not implemented.');
-}
+
 

@@ -6,6 +6,7 @@ import DisplayWorkoutScreen from './screens/DisplayWorkoutScreen';
 import { Workout } from './models/types';
 import EditWorkoutScreen from './screens/EditWorkoutsScreen';
 import ExercisesDBScreen from './screens/ExercisesDBScreen';
+import AddExerciseBaseScreen from './screens/AddExerciseBaseScreen';
 
 
 export type RootStackParamList = {
@@ -13,6 +14,7 @@ export type RootStackParamList = {
   DisplayWorkout: Workout;
   EditWorkouts: undefined;
   ExercisesDB: undefined;
+  AddExerciseBase: undefined;
   
   // Add other screen names and their corresponding params if needed
 };
@@ -34,6 +36,7 @@ export default function App() {
         </Stack.Screen>
         <Stack.Screen name='EditWorkouts' component={EditWorkoutScreen} />
         <Stack.Screen name='ExercisesDB' component={ExercisesDBScreen} />
+        <Stack.Screen name='AddExerciseBase' component={AddExerciseBaseScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

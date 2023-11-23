@@ -42,7 +42,6 @@ export default function DisplayWorkoutScreen({workout}:Props) {
 
     useEffect(() => {
       (async()=> {
-        console.log('useeffect')
         const tempExercises = await ExerciseUseDB.findByWorkout(workout.id)
         setExercises(tempExercises)
       })()

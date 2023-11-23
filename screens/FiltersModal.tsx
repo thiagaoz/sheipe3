@@ -39,8 +39,8 @@ export default function FiltersModal({filter, setFilter, filterOptions, setFilte
         <View style={styles.container}> 
           <TouchableWithoutFeedback>
             <View style={styles.content}>
-              <TouchableOpacity style={styles.modal_title}    onPress={()=> handleSelection('TODOS')}>
-                <Text style={filter==='TODOS'? [styles.option_label, styles.option_selected] : styles.option_label}> TODOS </Text>
+              <TouchableOpacity style={styles.modal_title}    onPress={()=> handleSelection('')}>
+                <Text style={filter===''? [styles.option_label, styles.option_selected] : styles.option_label}> TODOS </Text>
               </TouchableOpacity>
               <View style={styles.flatlist}>
                 <FlatList

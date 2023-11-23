@@ -16,8 +16,6 @@ import { Ionicons, MaterialIcons, AntDesign, Entypo  } from '@expo/vector-icons'
 export default function EditWorkoutScreen() {
   
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  
-  console.log(' ---------------- START ----------------')
 
   const [workouts, setWorkouts] = useState<Workout[]>()
   const inputRef = useRef<TextInput | null>(null);

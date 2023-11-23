@@ -5,38 +5,42 @@ import Header from '../components/Header'
 import ExerciseBaseDB from '../Database/ExerciseBaseDB'
 import FiltersModal from './FiltersModal'
 import { AntDesign } from '@expo/vector-icons';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../App';
 
 
 
 export default function ExercisesDBScreen() {
 
+    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
     const [exercises, setExercises] = useState<ExerciseBase[]>()
-    const [filterPrimary, setFilterPrimary] = useState<string>('TODOS')
-    const [filterSecundary, setFilterSecundary] = useState<string>('TODOS')
-    const [filterEquip, setFilterEquip] = useState<string>('TODOS')
+    const [originalExercises, setOriginalExercises] = useState<ExerciseBase[]>()
+    const [filterPrimary, setFilterPrimary] = useState<string>('')
+    const [filterSecundary, setFilterSecundary] = useState<string>('')
+    const [filterEquip, setFilterEquip] = useState<string>('')
     const [filterModalOn, setFilterModalOn] = useState<boolean>(false)
-    const [filter, setFilter] = useState<string>('primary')
+    const [filterType, setFilterType] = useState<string>('primary')
 
     const handleFilter = (str:string) => { 
-        setFilter(str)
+        setFilterType(str)
         setFilterModalOn(true)
     }
 
     const renderFilterModal = () => { 
-        if(filter==='primary'){
+        if(filterType==='primary'){
             return(
                 <FiltersModal filter={filterPrimary} setFilter={setFilterPrimary} filterOptions={MUSCLES} 
                 setFilterModalOn={setFilterModalOn} />
             )
         }
-        else if(filter==='secundary'){
+        else if(filterType==='secundary'){
             return(
                 <FiltersModal filter={filterSecundary} setFilter={setFilterSecundary} filterOptions={MUSCLES} 
                 setFilterModalOn={setFilterModalOn} />
             )
         }
-        else if(filter==='equip'){
-            console.log('here')
+        else if(filterType==='equip'){
             return(
                 <FiltersModal filter={filterEquip} setFilter={setFilterEquip} filterOptions={EQUIPS} 
                 setFilterModalOn={setFilterModalOn} />
@@ -52,44 +56,62 @@ export default function ExercisesDBScreen() {
         )
      }
 
+     const filterExercises = () => {
+        const filteredExercises = originalExercises?.filter(exercise =>
+            (filterPrimary === '' || exercise.primary_muscle === filterPrimary) &&
+            (filterSecundary === '' || exercise.secundary_muscle === filterSecundary) &&
+            (filterEquip === '' || exercise.equip === filterEquip)
+        ) || [];
+    
+        return filteredExercises;
+    };
+
+    const fetchData = async() => {
+        const data = await ExerciseBaseDB.getAll()
+        data.sort((a,b) => a.name.localeCompare(b.name))
+        setExercises(data)
+        setOriginalExercises(data)
+    }
+
     useEffect(() => {
-      ExerciseBaseDB.getAll()
-        .then( data => {
-            data.sort((a,b) => a.name.localeCompare(b.name))
-            setExercises(data)
-        })
+      fetchData()
     }, [])
+
+    useEffect(() => {
+        setExercises(filterExercises())
+    }, [filterPrimary, filterSecundary, filterEquip])
+    
     
 
   return (
     <View style={styles.container}>
       <Header />
-      <Text style={styles.screen_title}>Exercises Database</Text>
+      <Text style={styles.screen_title}>Exercícios</Text>
       <View style={styles.filters_view}>
         <Text style={styles.filters_label}>Filtros</Text>
         <View style={styles.filters_types_row}>
             <View style={styles.filter_types_column}>
                 <Text>Primário</Text>
                 <TouchableOpacity style={styles.filter_button} onPress={() => { handleFilter('primary') }}>
-                    <Text>{filterPrimary}</Text>
+                    <Text>{filterPrimary==='' ? 'TODOS' : filterPrimary}</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.filter_types_column} >
                 <Text>Secundário</Text>
                 <TouchableOpacity style={styles.filter_button} onPress={() => { handleFilter('secundary') }}>
-                    <Text>{filterSecundary}</Text>
+                    <Text>{filterSecundary==='' ? 'TODOS' : filterSecundary}</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.filter_types_column}>
                 <Text>Equipamento</Text>
                 <TouchableOpacity style={styles.filter_button} onPress={() => { handleFilter('equip') }}>
-                    <Text>{filterEquip}</Text>
+                    <Text>{filterEquip==='' ? 'TODOS' : filterEquip}</Text>
                 </TouchableOpacity>
             </View>
         </View>
       </View>
       <View>
-        <TouchableOpacity style={styles.add_button}>
+        <TouchableOpacity style={styles.add_button} onPress={()=> navigation.navigate('AddExerciseBase')}>
             <Text style={styles.add_button_label}>Adicionar exercício</Text>
             <AntDesign name="pluscircle" size={28} color="black" />
         </TouchableOpacity>
