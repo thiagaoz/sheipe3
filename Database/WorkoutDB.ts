@@ -77,7 +77,14 @@ const getAll = async (): Promise<Workout[]> => {
     return result.rows._array
 }
 
+const removeExercises = async(workout_id: number) => {
+  await executeTransaction(
+      'DELETE FROM exercises_use WHERE workout_id = ?', [workout_id]
+  )
+}
+
 const remove = async (workout:Workout) => {
+    await removeExercises(workout.id)
     await executeTransaction('DELETE FROM workouts WHERE id=?',
     [workout.id],)
 }

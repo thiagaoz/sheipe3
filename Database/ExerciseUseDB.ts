@@ -60,7 +60,7 @@ const getAll = async () : Promise<ExerciseUse[]> => {
 const remove = async (exercise:ExerciseUse) => {
     const result = await executeTransaction(
         'DELETE FROM exercises_use WHERE id=?',
-                [exercise.id],
+        [exercise.id],
     )
     return result.rowsAffected
 }

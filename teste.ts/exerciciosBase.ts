@@ -6,7 +6,11 @@ export const supino:ExerciseBase = {
     name: 'Supino',
     primary_muscle: 'Peito',
     secundary_muscle: 'Tríceps',
-    equip: 'Barra'
+    equip: 'Barra',
+    max_reps: 0,
+    max_load: 0,
+    max_volume_set: 0,
+    max_volume_session: 0
 }
 
 export const flexao:ExerciseBase = {
@@ -14,7 +18,11 @@ export const flexao:ExerciseBase = {
     name: 'Flexão',
     primary_muscle: 'Peito',
     secundary_muscle: 'Tríceps',
-    equip: 'Peso corporal'
+    equip: 'Peso corporal',
+    max_reps: 0,
+    max_load: 0,
+    max_volume_set: 0,
+    max_volume_session: 0
   }
 
 export const voadorPolBaixa:ExerciseBase = {
@@ -22,7 +30,11 @@ export const voadorPolBaixa:ExerciseBase = {
     name: 'Voador polia baixa',
     primary_muscle: 'Peito',
     secundary_muscle: 'Deltóide anterior',
-    equip: 'Polia'
+    equip: 'Polia',
+    max_reps: 0,
+    max_load: 0,
+    max_volume_set: 0,
+    max_volume_session: 0
 }
 
 export const barra:ExerciseBase = {
@@ -30,14 +42,22 @@ export const barra:ExerciseBase = {
     name: 'Barra Pronada',
     primary_muscle: 'Costas',
     secundary_muscle: 'Bíceps',
-    equip: 'Barra fixa'
+    equip: 'Barra fixa',
+    max_reps: 0,
+    max_load: 0,
+    max_volume_set: 0,
+    max_volume_session: 0
   }
   export const remada:ExerciseBase = {
     id:5,
     name: 'Remada curvada',
     primary_muscle: 'Costas',
     secundary_muscle: 'Bíceps',
-    equip: 'Barra'
+    equip: 'Barra',
+    max_reps: 0,
+    max_load: 0,
+    max_volume_set: 0,
+    max_volume_session: 0
   }
 
   export const puxadaAlta:ExerciseBase = {
@@ -45,7 +65,11 @@ export const barra:ExerciseBase = {
     name: 'Puxada alta',
     primary_muscle: 'Costas',
     secundary_muscle: '',
-    equip: 'Polia'
+    equip: 'Polia',
+    max_reps: 0,
+    max_load: 0,
+    max_volume_set: 0,
+    max_volume_session: 0
   }
 
   export const setExercisesBaseOnDB = async () => {

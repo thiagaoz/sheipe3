@@ -3,10 +3,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from './screens/HomeScreen';
 import AddWorkoutScreen from './screens/AddWorkoutModal';
 import DisplayWorkoutScreen from './screens/DisplayWorkoutScreen';
-import { Workout } from './models/types';
+import { ExerciseBase, Workout } from './models/types';
 import EditWorkoutScreen from './screens/EditWorkoutsScreen';
 import ExercisesDBScreen from './screens/ExercisesDBScreen';
 import AddExerciseBaseScreen from './screens/AddExerciseBaseScreen';
+import DisplayExerciseBaseScreen from './screens/DisplayExerciseBaseScreen';
 
 
 export type RootStackParamList = {
@@ -15,6 +16,7 @@ export type RootStackParamList = {
   EditWorkouts: undefined;
   ExercisesDB: undefined;
   AddExerciseBase: undefined;
+  DisplayExerciseBase: ExerciseBase;
   
   // Add other screen names and their corresponding params if needed
 };
@@ -37,6 +39,9 @@ export default function App() {
         <Stack.Screen name='EditWorkouts' component={EditWorkoutScreen} />
         <Stack.Screen name='ExercisesDB' component={ExercisesDBScreen} />
         <Stack.Screen name='AddExerciseBase' component={AddExerciseBaseScreen} />
+        <Stack.Screen name='DisplayExerciseBase'>
+          {props => <DisplayExerciseBaseScreen {...props} exercise={props.route.params} />}
+        </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );

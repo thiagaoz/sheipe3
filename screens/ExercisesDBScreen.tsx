@@ -5,7 +5,7 @@ import Header from '../components/Header'
 import ExerciseBaseDB from '../Database/ExerciseBaseDB'
 import FiltersModal from './FiltersModal'
 import { AntDesign } from '@expo/vector-icons';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../App';
 
 
@@ -50,7 +50,7 @@ export default function ExercisesDBScreen() {
 
     const renderItem = ({item}:{item:ExerciseBase}) => { 
         return(
-            <TouchableOpacity style={styles.exercise_box}>
+            <TouchableOpacity style={styles.exercise_box} onPress={() => { navigation.navigate('DisplayExerciseBase', item) }}>
                 <Text style={styles.exercise_label}>{item.name}</Text>
             </TouchableOpacity>
         )
@@ -81,7 +81,11 @@ export default function ExercisesDBScreen() {
         setExercises(filterExercises())
     }, [filterPrimary, filterSecundary, filterEquip])
     
-    
+    useFocusEffect(
+        React.useCallback(() => {
+          fetchData()
+        }, [])
+      );
 
   return (
     <View style={styles.container}>

@@ -10,6 +10,10 @@ export interface PreExerciseBase {
     primary_muscle: string,
     secundary_muscle: string,
     equip: string,
+    max_reps: number,
+    max_load: number,
+    max_volume_set: number,
+    max_volume_session: number
 }
 
 export interface ExerciseBase extends PreExerciseBase{

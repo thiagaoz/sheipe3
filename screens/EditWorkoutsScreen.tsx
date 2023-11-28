@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { FlatList, StyleSheet, Text, View, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard  } from 'react-native';
+import { FlatList, StyleSheet, Text, View, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard, Alert  } from 'react-native';
 import WorkoutDB from '../Database/WorkoutDB';
 import ExerciseBaseDB from '../Database/ExerciseBaseDB';
 import ExerciseUseDB from '../Database/ExerciseUseDB';
@@ -43,6 +43,24 @@ export default function EditWorkoutScreen() {
     const filteredWorkouts = workouts?.filter( item => item.id !== workout.id)
     setWorkouts(filteredWorkouts)
   }
+
+  const deletionAlert = async (workout:Workout) => {
+    Alert.alert(
+      'Cuidado!',
+      `Esse treino será excluído para sempre. Deseja continuar?`,
+      [
+        {
+          text: 'Não',
+          style: 'cancel',
+        },
+        {
+          text: 'Sim',
+          onPress: () => handleDelete(workout),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 
   //ArrowUP = subtract (-1) index position
   const handleArrowUp = async (oldPosition:number) => { 
@@ -122,7 +140,7 @@ export default function EditWorkoutScreen() {
               <MaterialIcons name="edit" size={24} color="white" style={styles.icon_circle}/> 
             </TouchableOpacity>
           }
-          <TouchableOpacity onPress={()=>handleDelete(item)}>
+          <TouchableOpacity onPress={()=>deletionAlert(item)}>
             <Ionicons name="trash-sharp" size={24} color="white" style={styles.icon_circle} />
           </TouchableOpacity>
         </View>
