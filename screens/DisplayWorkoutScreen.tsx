@@ -1,140 +1,136 @@
-import { View, Text , StyleSheet, TouchableOpacity, FlatList} from 'react-native'
+import { View, Text , StyleSheet, TouchableOpacity, FlatList, TouchableWithoutFeedback} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { ExerciseUse, Workout } from '../models/types'
 import Header from '../components/Header'
-import WorkoutDB from '../Database/WorkoutDB'
 import ExerciseUseDB from '../Database/ExerciseUseDB'
+import { AntDesign, MaterialIcons, Entypo } from '@expo/vector-icons';
+import ExerciseBox from '../components/ExerciseBox'
+import EditExerciseBox from '../components/EditExerciseBox'
+
 
 interface Props{
-    workout: Workout
+    workout: Workout,
 }
 
 export default function DisplayWorkoutScreen({workout}:Props) {
+
     const [exercises, setExercises] = useState<ExerciseUse[]>([])
+    const [editIsOn, setEditIsOn] = useState<boolean[]>()
+    const [boxState, setBoxState] = useState<string[]> ()
+
+    const toggleEditIsOn = (index:number) => { 
+      if(editIsOn){
+        const tempArr:boolean[] = [...editIsOn]
+        tempArr[index]=!tempArr[index]
+        setEditIsOn(tempArr)
+      }
+    }
 
     const renderItem = ({item} : {item:ExerciseUse}) => { 
-        return (
-          <TouchableOpacity style={styles.exercise_box}>
-            <View style={styles.exercise_title_view}>
-              <Text style={styles.exercise_label}>{item.name}</Text>
-              <View style={styles.muscle_equip}>
-                <Text>{item.primary_muscle}</Text>
-                <Text>{item.equip}</Text>
-              </View>
-            </View>
-            <View style={styles.sets_view}>
-              <View style={styles.sets_column}>
-                <Text>SETS</Text>
-                <Text>{item.sets}</Text>
-              </View>
-              <View style={styles.sets_column}>
-                <Text>REPS</Text>
-                <Text>{item.reps}</Text>
-              </View>
-              <View style={styles.sets_column}>
-                <Text>CARGA</Text>
-                <Text>{item.load}kg</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        )
-      }
 
-    useEffect(() => {
-      (async()=> {
-        const tempExercises = await ExerciseUseDB.findByWorkout(workout.id)
-        setExercises(tempExercises)
-      })()
-    }, [])
-    
+      if(editIsOn && editIsOn[item.position]===true){
+        return <EditExerciseBox exercise={item} toggleEditIsOn={toggleEditIsOn}/>
+      }
+      else{
+        return <ExerciseBox exercise={item} toggleEditIsOn={toggleEditIsOn}/>
+      }
+    }
+
+      useEffect(() => {
+        
+        (async()=> {
+          const tempExercises = await ExerciseUseDB.findByWorkout(workout.id)
+          setExercises(tempExercises)
+          setEditIsOn(Array(tempExercises.length).fill(false))
+          setBoxState(Array(tempExercises.length).fill('closed'))
+        })()
+      }, [])
+
+      useEffect(() => {
+        console.log(editIsOn)
+      }, [editIsOn])
 
   return (
     <View style={styles.container}>
         <Header />
-        <Text style={styles.workout_name_label}>{workout.name}</Text>
-        <View style={styles.flatlist}>
-        {exercises?.length!==0?
-          <FlatList
-            data={exercises}
-            keyExtractor={(item) =>  item.id.toString() } 
-            renderItem={renderItem}
-          />
-          : null
-        }
+        <View style={styles.body}>
+          <Text style={styles.workout_name_label}>{workout.name}</Text>
+          <View style={styles.flatlist}>
+          {exercises?.length!==0?
+            <FlatList
+              data={exercises}
+              keyExtractor={(item) =>  item.id.toString() } 
+              renderItem={renderItem}
+            />
+            : null
+          }
+          </View>
       </View>
-        <View style={styles.bottom_buttons_view} >
+      <View style={styles.bottom_buttons_view} >
             <TouchableOpacity style={styles.bottom_button}>
                 <Text>Editar</Text>
-                </TouchableOpacity>
+            </TouchableOpacity>
             <TouchableOpacity style={[styles.bottom_button, styles.bottom_button_middle]}>
                 <Text>{'Adicionar\n exercício'}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.bottom_button}>
                 <Text>Estatísticas</Text>
             </TouchableOpacity>
-        </View>
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      },
-    workout_name_label:{
-      fontWeight: 'bold',
-      fontSize: 25,
-      top: -65
-    },
-    flatlist:{
-        height: 400,
-        width: 300,
-        alignSelf:'center',
-        marginBottom: 2,
-        top: -120
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
-  exercise_box:{
+  body:{
+    alignItems: 'center',
+    marginTop: 10
+  },
+  workout_name_label:{
+    fontWeight: 'bold',
+    fontSize: 25,
+    marginTop: -10,
+    marginBottom: 20
+  },
+  flatlist:{
+    height: '85%',
+    width: 350,
+    alignSelf: 'center',
+    marginBottom: 2,
+  },
+  exercise_box_view:{
     borderColor: 'black',
     borderWidth: 1,
     borderRadius: 20,
-    alignItems: 'center',
-    //height:  80,
-    marginBottom: 5
+    marginBottom: 5,
   },
-  exercise_title_view:{
-    flexDirection: 'column',
-    alignItems: 'center',
-    borderColor: 'black',
-    borderBottomWidth: 1,
-    width: '100%'
-  },
-  exercise_label:{
-    fontSize: 18,
-    fontWeight: '500'
-  },
-  muscle_equip:{
+  bottom_icons_view:{
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-evenly',
     width: '100%',
+    paddingTop: 3,
+    paddingBottom: 3,
+    borderTopWidth: 1,
+    borderColor:'black'
   },
-  sets_view:{
-    flexDirection:'row',
-    width: '90%',
-    justifyContent:'space-between',
-    paddingBottom: 5
-  },
-  sets_column:{
-    flexDirection: 'column',
-    alignItems: 'center'
+  icon_circle:{
+    backgroundColor: 'black',
+    borderRadius: 30,
+    padding: 5,
+    marginRight: 50,
   },
   bottom_buttons_view:{
     flexDirection: 'row',
     width: '99%',
     height: 50,
-    
+    position: 'absolute',
+    bottom: 0,
   },
   bottom_button:{
     flex: 1,
@@ -146,6 +142,5 @@ const styles = StyleSheet.create({
   bottom_button_middle:{
     borderRightWidth: 0,
     borderLeftWidth: 0,
-
   },
 })

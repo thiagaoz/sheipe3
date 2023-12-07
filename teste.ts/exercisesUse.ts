@@ -6,8 +6,8 @@ export const supinoUse :ExerciseUse ={
     ...base.supino,
     id: 1,
     sets: 3,
-    reps: 12,
-    load: 50,
+    reps: [8,10,12],
+    load: [50,40,30],
     position: 0,
     base_id: base.supino.id,
     workout_id: 1 
@@ -17,8 +17,8 @@ export const voadorUse :ExerciseUse ={
     ...base.voadorPolBaixa,
     id: 3,
     sets: 3,
-    reps: 12,
-    load: 20,
+    reps: [12,12,12],
+    load: [20,20,20],
     position: 1,
     base_id: base.voadorPolBaixa.id,
     workout_id: 1
@@ -28,8 +28,8 @@ export const flexaoUse:ExerciseUse ={
     ...base.flexao,
     id: 2,
     sets: 3 ,
-    reps: 20,
-    load: 0,
+    reps: [20,15,10],
+    load: [0,0,0],
     position: 2,
     base_id: base.flexao.id,
     workout_id: 1

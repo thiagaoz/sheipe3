@@ -25,12 +25,22 @@ export interface PreExerciseUse extends PreExerciseBase{
     workout_id: number
     position:number,
     sets:number,
-    reps:number,
-    load:number,
+    reps:number[],
+    load:number[],
 }
 
 export interface ExerciseUse extends PreExerciseUse{
     id: number
+}
+
+export interface ExerciseUseFromDb extends PreExerciseBase {
+    id: number,
+    base_id: number,
+    workout_id: number
+    position:number,
+    sets:number,
+    reps:string,
+    load:string,
 }
 
 export const MUSCLES = [
@@ -41,3 +51,23 @@ export const MUSCLES = [
 export const EQUIPS = [
     'Barra','Barra fixa','Polia','Máquina','Halter','Caneleiras','Smith','Nenhum'
 ]
+
+export const toExerciseUse = (exercises:ExerciseUseFromDb[]):ExerciseUse[] => {
+    const convertedExercise:ExerciseUse[] = []
+    exercises.forEach( oldExercise => {
+        const exercise:ExerciseUse = {
+            ...oldExercise,
+            reps : strToNumArr(oldExercise.reps),
+            load : strToNumArr(oldExercise.load)
+        }
+        convertedExercise.push(exercise)
+    })
+    return convertedExercise
+}
+
+const strToNumArr = (str:string) => {
+    const subStr = str.split('/')
+    const result = subStr.map( (st) => parseInt(st, 10))
+    return result
+}
+

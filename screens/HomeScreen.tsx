@@ -37,6 +37,7 @@ export default function HomeScreen() {
   }
 
   const renderItem = ({item} : {item:Workout}) => { 
+    const numberOfExercises = item.exercises? item.exercises.length : 0
     return (
       <TouchableOpacity style={styles.workout_button} onPress={()=>navigation.navigate('DisplayWorkout', item)}>
         <Text style={styles.workout_label}>{item.name}</Text>
