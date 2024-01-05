@@ -8,9 +8,11 @@ import { AntDesign } from '@expo/vector-icons';
 import { NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../App';
 
+interface Props{
+    workout: Workout,
+}
 
-
-export default function ExercisesDBScreen() {
+export default function SelectExerciseBaseScreen({workout}:Props) {
 
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
@@ -50,7 +52,7 @@ export default function ExercisesDBScreen() {
 
     const renderItem = ({item}:{item:ExerciseBase}) => { 
         return(
-            <TouchableOpacity style={styles.exercise_box} onPress={() => { navigation.navigate('DisplayExerciseBase', [undefined, item]) }}>
+            <TouchableOpacity style={styles.exercise_box} onPress={() => { navigation.navigate('DisplayExerciseBase', [workout, item]) }}>
                 <Text style={styles.exercise_label}>{item.name}</Text>
             </TouchableOpacity>
         )
@@ -90,7 +92,7 @@ export default function ExercisesDBScreen() {
   return (
     <View style={styles.container}>
       <Header />
-      <Text style={styles.screen_title}>Exercícios</Text>
+      <Text style={styles.screen_title}>Selecionar Exercício</Text>
       <View style={styles.filters_view}>
         <Text style={styles.filters_label}>Filtros</Text>
         <View style={styles.filters_types_row}>
@@ -113,12 +115,6 @@ export default function ExercisesDBScreen() {
                 </TouchableOpacity>
             </View>
         </View>
-      </View>
-      <View>
-        <TouchableOpacity style={styles.add_button} onPress={()=> navigation.navigate('AddExerciseBase')}>
-            <Text style={styles.add_button_label}>Adicionar exercício</Text>
-            <AntDesign name="pluscircle" size={28} color="black" />
-        </TouchableOpacity>
       </View>
       <View style={styles.flatlist}>
         {exercises?.length!==0?

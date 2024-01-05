@@ -6,17 +6,21 @@ import ExerciseUseDB from '../Database/ExerciseUseDB'
 import { AntDesign, MaterialIcons, Entypo } from '@expo/vector-icons';
 import ExerciseBox from '../components/ExerciseBox'
 import EditExerciseBox from '../components/EditExerciseBox'
+import { useFocusEffect } from '@react-navigation/native'
+import AddExerciseTypeModal from './AddExerciseTypeModal'
 
 
 interface Props{
     workout: Workout,
+    numOfExercises: number | undefined
 }
 
-export default function DisplayWorkoutScreen({workout}:Props) {
+export default function DisplayWorkoutScreen({workout, numOfExercises}:Props) {
 
     const [exercises, setExercises] = useState<ExerciseUse[]>([])
-    const [editIsOn, setEditIsOn] = useState<boolean[]>()
-    const [boxState, setBoxState] = useState<string[]> ()
+    const [editIsOn, setEditIsOn] = useState<boolean[]>(Array(numOfExercises).fill(false))
+    const [addExercise, setAddExercise]  = useState<boolean>(false);
+    //const [boxState, setBoxState] = useState<string[]> (Array(numOfExercises).fill('close'))
 
     const toggleEditIsOn = (index:number) => { 
       if(editIsOn){
@@ -26,30 +30,33 @@ export default function DisplayWorkoutScreen({workout}:Props) {
       }
     }
 
-    const renderItem = ({item} : {item:ExerciseUse}) => { 
-
-      if(editIsOn && editIsOn[item.position]===true){
-        return <EditExerciseBox exercise={item} toggleEditIsOn={toggleEditIsOn}/>
-      }
-      else{
-        return <ExerciseBox exercise={item} toggleEditIsOn={toggleEditIsOn}/>
-      }
+    const updateExercises = (exercise:ExerciseUse) => { 
+      const exercisesTemp = [...exercises]
+      exercisesTemp[exercise.position] = exercise
+      setExercises([...exercisesTemp ])
     }
 
-      useEffect(() => {
-        
-        (async()=> {
-          const tempExercises = await ExerciseUseDB.findByWorkout(workout.id)
-          setExercises(tempExercises)
-          setEditIsOn(Array(tempExercises.length).fill(false))
-          setBoxState(Array(tempExercises.length).fill('closed'))
-        })()
-      }, [])
+    const fetchData = async () => { 
+      const tempExercises = await ExerciseUseDB.findByWorkout(workout.id)
+      setExercises(tempExercises)
+    }
 
-      useEffect(() => {
-        console.log(editIsOn)
-      }, [editIsOn])
+    const renderItem = ({item} : {item:ExerciseUse}) => { 
+      return <ExerciseBox exercise={item} toggleEditIsOn={toggleEditIsOn} beingEdited={editIsOn[item.position]}
+                updateExercises={updateExercises}/>
+    }
 
+    useEffect(() => {
+      (async()=> {
+        const tempExercises = await ExerciseUseDB.findByWorkout(workout.id)
+        setExercises(tempExercises)
+      })()
+    }, [])
+
+    useEffect(() => {
+      fetchData()
+    }, [editIsOn])
+      
   return (
     <View style={styles.container}>
         <Header />
@@ -70,13 +77,16 @@ export default function DisplayWorkoutScreen({workout}:Props) {
             <TouchableOpacity style={styles.bottom_button}>
                 <Text>Editar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.bottom_button, styles.bottom_button_middle]}>
+            <TouchableOpacity style={[styles.bottom_button, styles.bottom_button_middle]} onPress={() => { setAddExercise(true) }}>
                 <Text>{'Adicionar\n exercício'}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.bottom_button}>
                 <Text>Estatísticas</Text>
             </TouchableOpacity>
       </View>
+      {
+        addExercise&& <AddExerciseTypeModal workout={workout} setAddExercise={setAddExercise}/>
+      }
     </View>
   )
 }
@@ -143,4 +153,7 @@ const styles = StyleSheet.create({
     borderRightWidth: 0,
     borderLeftWidth: 0,
   },
+  invisible:{
+    display: 'none'
+  }
 })

@@ -10,10 +10,10 @@ export interface PreExerciseBase {
     primary_muscle: string,
     secundary_muscle: string,
     equip: string,
-    max_reps: number,
-    max_load: number,
-    max_volume_set: number,
-    max_volume_session: number
+    max_reps?: number,
+    max_load?: number,
+    max_volume_set?: number,
+    max_volume_session?: number
 }
 
 export interface ExerciseBase extends PreExerciseBase{
@@ -71,3 +71,16 @@ const strToNumArr = (str:string) => {
     return result
 }
 
+export const defaultExerciseUse:ExerciseUse = {
+    name: '',
+    primary_muscle: '',
+    secundary_muscle: '',
+    equip: '',
+    id: 0,
+    base_id: 0,
+    workout_id: 0,
+    position: 0,
+    sets: 0,
+    reps:[],
+    load:[],
+}

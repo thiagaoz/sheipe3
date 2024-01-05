@@ -2,17 +2,18 @@ import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native'
 import React, { useEffect } from 'react'
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../App';
-import { ExerciseBase } from '../models/types'
+import { ExerciseBase, Workout } from '../models/types'
 import Header from '../components/Header'
 import { Ionicons, MaterialIcons, AntDesign, Entypo  } from '@expo/vector-icons';
 import ExerciseBaseDB from '../Database/ExerciseBaseDB';
 
 
 interface Props {
-    exercise: ExerciseBase
+    workout: Workout | undefined,
+    exercise: ExerciseBase,
 }
 
-export default function DisplayExerciseBaseScreen({exercise}:Props) {
+export default function DisplayExerciseBaseScreen({workout, exercise}:Props) {
 
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
@@ -72,9 +73,16 @@ export default function DisplayExerciseBaseScreen({exercise}:Props) {
             <Text>Volume por série: {exercise.max_volume_set}</Text>
             <Text>Volume por sessão: {exercise.max_volume_session}</Text>
         </View>
-        <TouchableOpacity style={styles.trash_button} onPress={() => { deletionAlert() }}>
-            <Ionicons name="trash-sharp" size={24} color="white" style={styles.icon_circle} />
-        </TouchableOpacity>
+        {workout===undefined?
+            <TouchableOpacity style={styles.trash_button} onPress={() => { deletionAlert() }}>
+                <Ionicons name="trash-sharp" size={24} color="white" style={styles.icon_circle} />
+            </TouchableOpacity>
+        :
+            <TouchableOpacity style={styles.next_button} onPress={() => navigation.navigate('AddExerciseUse',[workout, exercise])}>
+                <Text style={styles.next_text}>Prosseguir</Text>
+            </TouchableOpacity>
+        }
+        
     </View>
   )
 }
@@ -112,5 +120,17 @@ const styles = StyleSheet.create({
         padding: 4,
         marginRight: 4,
         zIndex: 5
+    },
+    next_button:{
+        backgroundColor: 'black',
+        padding: 5,
+        paddingLeft: 15,
+        paddingRight: 15,
+        borderRadius: 20,
+        marginTop: 40,
+      },
+      next_text:{
+        fontSize: 18,
+        color: 'white',
       },
 })

@@ -44,11 +44,12 @@ const update = async (exercise:ExerciseUse) => {
 
 const find = async (id:number) => {
     const result = await executeTransaction(
-        'SELECT FROM exercises_use WHERE id=?',
+        'SELECT * FROM exercises_use WHERE id=?',
         [id],
     )
-
-    return toExerciseUse(result.rows._array)
+    if(result.rows._array) return toExerciseUse(result.rows._array)[0]
+    else return false
+    
 }
 
 const findByWorkout = async (workout_id:number) : Promise<ExerciseUse[]> => {

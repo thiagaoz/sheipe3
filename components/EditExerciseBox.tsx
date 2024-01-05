@@ -8,108 +8,170 @@ import { v4 as uuidv4 } from 'uuid';
 import { AntDesign, MaterialIcons, Entypo } from '@expo/vector-icons';
 
 interface Props{
-  exercise: ExerciseUse,
-  toggleEditIsOn: (index: number) => void
+  propExercise: ExerciseUse,
+  toggleEditIsOn: (index: number) => void,
+  updateExercises: (exerciseEdited: ExerciseUse) => void
 }
 
-export default function EditExerciseBox({exercise, toggleEditIsOn}:Props) {
+export default function EditExerciseBox({propExercise, toggleEditIsOn, updateExercises}:Props) {
 
-    const renderColumn = (exercise:ExerciseUse, property: string) => {
+  const [exercise, setExercise] = useState<ExerciseUse>({...propExercise})
 
-        if (property === 'sets'){
-          const arr = Array.from({length: exercise.sets})
-          const id = exercise.id +'_sets_'
-          return( 
-            <View >
-              {arr.map((_, index) => (
-                <View style={styles.sets_row}   key={id + index} >
-                  <Text style={styles.number_row_text}>{index+1}</Text>
-                </View>
-              ))}
-            </View>
-          )
-        }
-  
-        if (property === 'reps') {
-          const id = exercise.id + '_reps_'
-          return(
-            <View>
-              {exercise.reps.map( (value, index) => (
-                <View style={styles.reps_load_row} key={id + index}>
-                  <TouchableOpacity>
-                    <AntDesign name="minuscircle" size={20} color="black" />
-                  </TouchableOpacity>
-                  <Text style={styles.number_row_text}>{value}</Text>
-                  <TouchableOpacity>
-                    <AntDesign name="pluscircle" size={20} color="black" />
-                  </TouchableOpacity>
-                </View>
-              ))
-              }
-            </View>
-          )
-        }
-  
-        else {
-          const id = exercise.id + '_load_'
-          return(
-            <View>
-              {exercise.load.map( (value, index) => (
-                <View style={styles.reps_load_row} key={id + index}>
-                <TouchableOpacity>
-                  <AntDesign name="minuscircle" size={20} color="black" />
-                </TouchableOpacity>
-                <Text style={styles.number_row_text}>{value}</Text>
-                <TouchableOpacity>
-                  <AntDesign name="pluscircle" size={20} color="black" />
-                </TouchableOpacity>
+  useEffect(() => {
+    (async()=> {
+      const tempExercise = await ExerciseUseDB.find(propExercise.id)
+      if(tempExercise) setExercise(tempExercise)
+      
+    })()
+  }, [])
+
+  const opButton = (category:string, oldExercise:ExerciseUse, index:number, op:string) => { 
+    
+    if (category === 'reps') {
+      const newReps = [...oldExercise.reps]
+      if(op === '+') newReps[index] = oldExercise.reps[index] + 1
+      if(op === '-') newReps[index] = oldExercise.reps[index] - 1
+      setExercise( {
+        ...oldExercise,
+        reps: newReps
+      })
+    }
+
+    if (category === 'load') {
+      const newLoad = [...oldExercise.load]
+      if(op === '+') newLoad[index] = oldExercise.load[index] + 1
+      if(op === '-') newLoad[index] = oldExercise.load[index] - 1
+      setExercise( {
+        ...oldExercise,
+        load: newLoad
+      })
+    }
+  }
+
+  const handleSaveButton = async () => {
+    if(exercise){
+      //updateExercises(exercise)
+      await ExerciseUseDB.update(exercise)
+      toggleEditIsOn(exercise.position)
+    }
+  }
+    
+  const renderColumn = (exercise:ExerciseUse, property: string) => {
+
+      if (property === 'sets'){
+        const arr = Array.from({length: exercise.sets})
+        const id = exercise.id +'_sets_'
+        return( 
+          <View >
+            {arr.map((_, index) => (
+              <View style={styles.sets_row}   key={id + index} >
+                <Text style={styles.number_row_text}>{index+1}</Text>
               </View>
-              ))
-              }
-            </View>
-          )
-        }
-  
+            ))}
+          </View>
+        )
       }
 
-  return (
-    <TouchableWithoutFeedback>
-      <View style={styles.exercise_box_view}>
-        <View  style={styles.exercise_box}>
-          <View style={styles.exercise_title_view}>
-            <Text style={styles.exercise_label}>{exercise.name}</Text>
-            <View style={styles.muscle_equip}>
-              <Text>{exercise.primary_muscle}</Text>
-              <Text>{exercise.equip}</Text>
-            </View>
+      if (property === 'reps') {
+        const id = exercise.id + '_reps_'
+        return(
+          <View>
+            {exercise.reps.map( (value, index) => (
+              <View style={styles.reps_load_row} key={id + index}>
+                <TouchableOpacity  onPress={() => { opButton('reps', exercise, index, '-') }}>
+                  <AntDesign name="minuscircle" size={24} color="black" />
+                </TouchableOpacity>
+                <Text style={styles.number_row_text}>{value}</Text>
+                <TouchableOpacity onPress={() => { opButton('reps', exercise, index, '+') }}>
+                  <AntDesign name="pluscircle" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+            ))
+            }
           </View>
-          <View style={styles.sets_view}>
-            <View style={styles.sets_column}>
-              <Text>SETS</Text>
-              {renderColumn(exercise, 'sets')}
-            </View>
-            <View style={styles.sets_column}>
-              <Text>REPS</Text>
-              {renderColumn(exercise, 'reps')}
-            </View>
-            <View style={styles.sets_column}>
-              <Text>CARGA</Text>
-              {renderColumn(exercise, 'load')}
-            </View>
+        )
+      }
+
+      if (property === 'load') {
+        const id = exercise.id + '_load_'
+        return(
+          <View>
+            {exercise.load.map( (value, index) => (
+              <View style={styles.reps_load_row} key={id + index}>
+                <TouchableOpacity  onPress={() => { opButton('load', exercise, index, '-') }}>
+                  <AntDesign name="minuscircle" size={24} color="black" />
+                </TouchableOpacity>
+                <Text style={styles.number_row_text}>{value}</Text>
+                <TouchableOpacity onPress={() => { opButton('load', exercise, index,'+') }}>
+                  <AntDesign name="pluscircle" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+            ))
+            }
           </View>
-          <View style={styles.bottom_icons_view}>
-            <TouchableOpacity onPress={ ()=> toggleEditIsOn(exercise.position) }>
-              <MaterialIcons name="cancel" size={39} color="black" style={styles.cancel_icon}/>
-            </TouchableOpacity>
-            
-            <TouchableOpacity onPress={ ()=> toggleEditIsOn(exercise.position) }>
-              <Entypo name="save" size={24} color="white" style={styles.icon_circle}/>
-            </TouchableOpacity>
+        )
+      }
+
+      else{
+        const id = exercise.id + '_done_'
+        return(
+          <View>
+            {exercise.load.map( (value, index) => (
+            <View style={styles.reps_load_row} key={id + index}>
+              <Entypo name="check" size={18} color="white" style={styles.icon_check_invisible}/>                 
+            </View>
+            ))
+            }
+          </View>
+        )
+      }
+
+    }
+  
+  if(exercise) {
+    return (
+      <TouchableWithoutFeedback>
+        <View style={styles.exercise_box_view}>
+          <View  style={styles.exercise_box}>
+            <View style={styles.exercise_title_view}>
+              <Text style={styles.exercise_label}>{exercise.name}</Text>
+              <View style={styles.muscle_equip}>
+                <Text>{exercise.primary_muscle}</Text>
+                <Text>{exercise.equip}</Text>
+              </View>
+            </View>
+            <View style={styles.sets_view}>
+              <View style={styles.sets_column}>
+                <Text>SETS</Text>
+                {renderColumn(exercise, 'sets')}
+              </View>
+              <View style={styles.sets_column}>
+                <Text>REPS</Text>
+                {renderColumn(exercise, 'reps')}
+              </View>
+              <View style={styles.sets_column}>
+                <Text>CARGA</Text>
+                {renderColumn(exercise, 'load')}
+              </View>
+              <View style={styles.sets_column}>
+                <Text>FEITO</Text>
+                {renderColumn(exercise, 'done')}
+              </View>
+            </View>
+            <View style={styles.bottom_icons_view}>
+              <TouchableOpacity onPress={ ()=> toggleEditIsOn(exercise.position) }>
+                <MaterialIcons name="cancel" size={39} color="black" style={styles.cancel_icon}/>
+              </TouchableOpacity>
+              
+              <TouchableOpacity onPress={ ()=> handleSaveButton()}>
+                <Entypo name="save" size={24} color="white" style={styles.icon_circle}/>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    </TouchableWithoutFeedback>
-  )
+      </TouchableWithoutFeedback>
+    )
+  } else null
 }
 
 const styles = StyleSheet.create({
@@ -178,7 +240,7 @@ const styles = StyleSheet.create({
       marginBottom: 5
     },
     number_row_text:{
-      fontSize: 18,
+      fontSize: 22,
       marginLeft: 3,
       marginRight: 3,
     },
@@ -186,6 +248,12 @@ const styles = StyleSheet.create({
       backgroundColor: 'black',
       borderRadius: 30,
       padding: 5,
+    },
+    icon_check_invisible:{
+      backgroundColor: 'white',
+      borderRadius: 30,
+      padding: 5,
+      marginTop:2
     },
     bottom_buttons_view:{
       flexDirection: 'row',
